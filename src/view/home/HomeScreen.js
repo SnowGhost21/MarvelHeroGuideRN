@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, Image, SafeAreaView, View, FlatList, ActivityIndicator } from 'react-native';
-import { retrieveHqs } from '../../repository/actions/HQActions';
+import { retrieveHeros } from '../../repository/actions/HeroActions';
 import { connect } from 'react-redux';
-import HeroCard from '../components/HeroCard';
+import HeroCard from '../hero/HeroCard';
 
 class HomeScreen extends Component {
 
@@ -12,7 +12,7 @@ class HomeScreen extends Component {
 
     constructor(props) {
         super(props);
-        this.getComics = this.getComics.bind(this);
+        this.getHeros = this.getHeros.bind(this);
         this.state = {
             limit: 20,
             offset: 0,
@@ -31,7 +31,7 @@ class HomeScreen extends Component {
 
 
     componentDidMount() {
-        this.getComics();
+        this.getHeros();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -41,15 +41,15 @@ class HomeScreen extends Component {
         }
     }
 
-    getComics() {
-        const { retrieveComics } = this.props;
+    getHeros() {
+        const { retrieveHero } = this.props;
         const { limit, offset } = this.state;
         this.setState({ isLoading: true })
-        retrieveComics(limit, offset)
+        retrieveHero(limit, offset)
     }
 
     render() {
-        const { comicBooks } = this.props;
+        const { comicBooks, navigation } = this.props;
         return (
             <SafeAreaView style={styles.container}>
                 <View style={{ flex: 1 }}>
@@ -57,8 +57,8 @@ class HomeScreen extends Component {
                         <FlatList
                             data={comicBooks}
                             keyExtractor={(item, index) => item.id}
-                            renderItem={hero => <HeroCard item={hero.item} />}
-                            onEndReached={this.getComics}
+                            renderItem={hero => <HeroCard item={hero.item} navigation={navigation}/>}
+                            onEndReached={this.getHeros}
                             onEndReachedThreshold={0.01}
                             ListFooterComponent={this.renderFooter}
                         />
@@ -80,14 +80,14 @@ const styles = StyleSheet.create({
 })
 
 const mapDispatchToProps = dispatch => ({
-    retrieveComics: (limit, offset) => {
-        dispatch(retrieveHqs(limit, offset));
+    retrieveHero: (limit, offset) => {
+        dispatch(retrieveHeros(limit, offset));
     }
 })
 
-const mapStateToProps = ({ marvelHqs }) => ({
-    comicBooks: marvelHqs.hqs,
-    offset: marvelHqs.offset
+const mapStateToProps = ({ marvelHero }) => ({
+    comicBooks: marvelHero.heroes,
+    offset: marvelHero.offset
 });
 
 export default connect(

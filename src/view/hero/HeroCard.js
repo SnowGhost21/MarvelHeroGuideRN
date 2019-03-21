@@ -1,5 +1,6 @@
-import { StyleSheet, Image, View, Text } from 'react-native';
+import { StyleSheet, Image, View, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
+import { generateImageURI } from '../utils/ImageUtils';
 
 const styles = StyleSheet.create({
     container: {
@@ -35,25 +36,20 @@ const styles = StyleSheet.create({
     },
 });
 
-function createImageUri(thumbnail) {
-    const response = (`${thumbnail.path}.${thumbnail.extension}`).replace('http', 'https');
-    console.log(response);
-    return response;
-
-}
-
-const HeroCard = ({ item }) => (
-    <View style={styles.container}>
-        <Image source={{ uri: createImageUri(item.thumbnail) }} style={styles.photo} />
+const HeroCard = ({ item, navigation }) => (
+    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('HeroDetail', {
+        hero: item
+    })}>
+        <Image source={{ uri: generateImageURI(item.thumbnail) }} style={styles.photo} />
         <View style={styles.container_text}>
             <Text style={styles.title}>
-                {item.name}
-            </Text>
-            <Text style={styles.description}>
+                        {item.name}
+                    </Text>
+                    <Text style={styles.description}>
                 {item.description || "Description not available"}
             </Text>
         </View>
-    </View>
+    </TouchableOpacity>
 );
 
 

@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import marvelHqs from './HQReducer';
+import marvelHero from './HeroReducer';
 
 export default combineReducers({
-    marvelHqs
+    marvelHero
 });

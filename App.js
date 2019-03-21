@@ -7,6 +7,7 @@ import reducer from './src/repository/reducers';
 import SplashScreen from './src/view/splash/SplashScreen';
 import { createStackNavigator, createAppContainer } from 'react-navigation'
 import HomeScreen from './src/view/home/HomeScreen';
+import HeroDetail from './src/view/hero/HeroDetail';
 
 let store;
 if (process.env.NODE_ENV === "production") {
@@ -22,6 +23,9 @@ const stack = createStackNavigator({
     Home: {
         screen: HomeScreen,
         title: 'Home'
+    },
+    HeroDetail: {
+        screen: HeroDetail
     }
 })
 
