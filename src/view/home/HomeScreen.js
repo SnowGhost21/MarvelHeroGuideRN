@@ -49,14 +49,14 @@ class HomeScreen extends Component {
     }
 
     render() {
-        const { comicBooks, navigation } = this.props;
+        const { heroes, navigation } = this.props;
         return (
             <SafeAreaView style={styles.container}>
                 <View style={{ flex: 1 }}>
-                    {comicBooks.length > 0 &&
+                    {heroes.length > 0 &&
                         <FlatList
-                            data={comicBooks}
-                            keyExtractor={(item, index) => item.id}
+                            data={heroes}
+                            keyExtractor={(item, index) => item.id.toString()}
                             renderItem={hero => <HeroCard item={hero.item} navigation={navigation}/>}
                             onEndReached={this.getHeros}
                             onEndReachedThreshold={0.01}
@@ -86,7 +86,7 @@ const mapDispatchToProps = dispatch => ({
 })
 
 const mapStateToProps = ({ marvelHero }) => ({
-    comicBooks: marvelHero.heroes,
+    heroes: marvelHero.heroes,
     offset: marvelHero.offset
 });
 

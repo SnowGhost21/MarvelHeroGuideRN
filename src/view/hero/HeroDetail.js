@@ -3,6 +3,8 @@ import { StyleSheet, Image, SafeAreaView, View, ScrollView, Text } from 'react-n
 import { getHeroDetails } from '../../repository/actions/HeroActions';
 import { connect } from 'react-redux';
 import { generateImageURI } from '../utils/ImageUtils';
+import { FlatList } from 'react-native-gesture-handler';
+import ComicCard from '../comic/ComicCard';
 
 
 class HeroDetail extends Component {
@@ -21,17 +23,36 @@ class HeroDetail extends Component {
     }
 
     render() {
-        const { heroById } = this.props;
+        const { heroById, navigation } = this.props;
         return (
             <SafeAreaView style={styles.container}>
                 {heroById && (
                     <ScrollView style={{ flex: 1 }}>
-                        <View style={{ flex: 1 }}>
+                        <View style={styles.containerImage}>
                             <Image source={{ uri: generateImageURI(heroById.thumbnail) }} style={styles.photo} />
                         </View>
-                        <View style={{ flex: 2 }}>
-                            <Text>{heroById.name}</Text>
+                        <View style={styles.containerContent}>
+                            <View style={styles.containerDescription}>
+                                <Text style={styles.title}>Description</Text>
+                                <Text style={styles.description}>
+                                    {heroById.description || "Description not available"}
+                                </Text>
+                            </View>
+                            <View style={styles.divider} />
+                            <View style={styles.containerComics}>
+                                <Text style={{ ...styles.title, marginLeft: 16 }}>
+                                    Comics
+                                </Text>
+                                <FlatList
+                                    keyExtractor={(item, index) => item.id.toString()}
+                                    style={styles.comicList}
+                                    horizontal={true}
+                                    data={heroById.comics.items}
+                                    renderItem={comic => <ComicCard item={comic.item} navigation={navigation}/>}
+                                />
+                            </View>
                         </View>
+
                     </ScrollView>
                 )}
             </SafeAreaView>
@@ -40,13 +61,54 @@ class HeroDetail extends Component {
 }
 
 const styles = StyleSheet.create({
+    containerImage: {
+        flex: 1
+    },
     container: {
         flex: 1
+    },
+    containerContent: {
+        marginTop: 16,
+        flex: 2,
+
+    },
+    containerDescription: {
+        alignContent: 'center',
+        alignItems: 'center',
+    },
+    containerComics: {
+        flex: 1,
+        paddingTop: 48,
     },
     photo: {
         flex: 1,
         height: 200,
         width: null
+    },
+    title: {
+        color: 'black',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+
+    description: {
+        marginLeft: 16,
+        marginRight: 16,
+        marginTop: 8,
+        textAlign: 'center'
+    },
+    divider: {
+        flex: 1,
+        width: null,
+        height: 2,
+        marginLeft: 16,
+        marginRight: 16,
+        marginTop: 32,
+        backgroundColor: '#aaa'
+    },
+    comicList: {
+        marginTop: 16,
+        marginBottom: 8
     }
 })
 

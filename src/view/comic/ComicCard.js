@@ -5,52 +5,56 @@ import { generateImageURI } from '../utils/ImageUtils';
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'row',
-        padding: 10,
-        marginLeft: 16,
-        marginRight: 16,
-        marginTop: 8,
-        marginBottom: 8,
+        width: 264,
+        marginLeft: 8,
+        marginRight: 8,
         borderRadius: 5,
         backgroundColor: '#FFF',
         elevation: 2,
+        paddingBottom: 8,
     },
     title: {
+        marginTop: 16,
         fontSize: 16,
         color: '#000',
     },
     containerText: {
         flex: 1,
         flexDirection: 'column',
-        marginLeft: 12,
+        marginLeft: 16,
+        marginRight: 16,
         justifyContent: 'center',
+        alignItems: 'center',
+        paddingBottom: 8,
     },
     description: {
-        fontSize: 11,
-        fontStyle: 'italic',
+        textAlign: 'center',
+        marginTop: 8,
+        fontSize: 16,
     },
     photo: {
-        height: 50,
-        width: 50,
+        width: 264,
+        height: 192,
         borderRadius: 25
     },
 });
 
-const HeroCard = ({ item, navigation }) => (
-    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('HeroDetail', {
-        hero: item
-    })}>
+
+const ComicCard = ({ item, navigation }) => (
+    <TouchableOpacity style={styles.container}>
         <Image source={{ uri: generateImageURI(item.thumbnail) }} style={styles.photo} />
         <View style={styles.containerText}>
             <Text style={styles.title}>
-                {item.name}
+                {item.title}
             </Text>
-            <Text style={styles.description}>
+            <Text
+            ellipsizeMode='tail'
+                numberOfLines={3}
+                style={styles.description}>
                 {item.description || "Description not available"}
             </Text>
         </View>
     </TouchableOpacity>
 );
 
-
-export default HeroCard;
+export default ComicCard;
