@@ -1,13 +1,30 @@
 import React, { Component } from 'react'
-import { StyleSheet, Image, SafeAreaView, View, ScrollView, Text } from 'react-native';
+import {
+    StyleSheet,
+    Image,
+    SafeAreaView,
+    View,
+    ScrollView,
+    Text,
+    ActivityIndicator
+} from 'react-native';
 import { getHeroDetails } from '../../repository/actions/HeroActions';
 import { connect } from 'react-redux';
 import { generateImageURI } from '../utils/ImageUtils';
 import { FlatList } from 'react-native-gesture-handler';
 import ComicCard from '../comic/ComicCard';
+import LoadComponent from '../custom/LoadComponent'
 
 
 class HeroDetail extends Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = ({
+            isLoading: false
+        })
+    }
 
     static navigationOptions = ({ navigation }) => {
         const { state } = navigation;
@@ -16,47 +33,66 @@ class HeroDetail extends Component {
         };
     };
 
+    componentWillReceiveProps(nextProps) {
+        const { heroById } = nextProps;
+
+        if (heroById) {
+            this.setState({ isLoading: false });
+        }
+    }
+
+
     componentWillMount() {
         const { retrieveHeroById, navigation } = this.props;
         const hero = navigation.getParam('hero', undefined);
         retrieveHeroById(hero.id);
+        this.setState({ isLoading: true })
     }
 
     render() {
         const { heroById, navigation } = this.props;
-        return (
-            <SafeAreaView style={styles.container}>
-                {heroById && (
-                    <ScrollView style={{ flex: 1 }}>
-                        <View style={styles.containerImage}>
-                            <Image source={{ uri: generateImageURI(heroById.thumbnail) }} style={styles.photo} />
-                        </View>
-                        <View style={styles.containerContent}>
-                            <View style={styles.containerDescription}>
-                                <Text style={styles.title}>Description</Text>
-                                <Text style={styles.description}>
-                                    {heroById.description || "Description not available"}
-                                </Text>
-                            </View>
-                            <View style={styles.divider} />
-                            <View style={styles.containerComics}>
-                                <Text style={{ ...styles.title, marginLeft: 16 }}>
-                                    Comics
-                                </Text>
-                                <FlatList
-                                    keyExtractor={(item, index) => item.id.toString()}
-                                    style={styles.comicList}
-                                    horizontal={true}
-                                    data={heroById.comics.items}
-                                    renderItem={comic => <ComicCard item={comic.item} navigation={navigation}/>}
-                                />
-                            </View>
-                        </View>
+        const { isLoading } = this.state;
 
-                    </ScrollView>
-                )}
-            </SafeAreaView>
-        )
+        if (isLoading) {
+            return (
+                <SafeAreaView style={styles.containerLoader}>
+                    <LoadComponent />
+                </SafeAreaView>
+            )
+        } else {
+            return (
+                <SafeAreaView style={styles.container}>
+                    {heroById && (
+                        <ScrollView style={{ flex: 1 }}>
+                            <View style={styles.containerImage}>
+                                <Image source={{ uri: generateImageURI(heroById.thumbnail) }} style={styles.photo} />
+                            </View>
+                            <View style={styles.containerContent}>
+                                <View style={styles.containerDescription}>
+                                    <Text style={styles.title}>Description</Text>
+                                    <Text style={styles.description}>
+                                        {heroById.description || "Description not available"}
+                                    </Text>
+                                </View>
+                                <View style={styles.divider} />
+                                <View style={styles.containerComics}>
+                                    <Text style={{ ...styles.title, marginLeft: 16 }}>
+                                        Comics
+                                    </Text>
+                                    <FlatList
+                                        keyExtractor={(item, index) => item.id.toString()}
+                                        style={styles.comicList}
+                                        horizontal={true}
+                                        data={heroById.comics.items}
+                                        renderItem={comic => <ComicCard item={comic.item} navigation={navigation} />}
+                                    />
+                                </View>
+                            </View>
+                        </ScrollView>
+                    )}
+                </SafeAreaView>
+            )
+        }
     }
 }
 
@@ -66,6 +102,9 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1
+    },
+    containerLoader: {
+        flex: 1,
     },
     containerContent: {
         marginTop: 16,

@@ -3,12 +3,13 @@ import { StyleSheet, Image, SafeAreaView, View, FlatList, ActivityIndicator } fr
 import { retrieveHeros } from '../../repository/actions/HeroActions';
 import { connect } from 'react-redux';
 import HeroCard from '../hero/HeroCard';
+import LoadComponent from '../custom/LoadComponent';
 
 class HomeScreen extends Component {
 
     static navigationOptions = {
         title: 'Home',
-      };
+    };
 
     constructor(props) {
         super(props);
@@ -16,12 +17,13 @@ class HomeScreen extends Component {
         this.state = {
             limit: 20,
             offset: 0,
-            isLoading: false
+            isLoading: true,
+            footerLoading: false
         }
     }
 
     renderFooter = () => {
-        if (!this.state.isLoading) return null;
+        if (!this.state.footerLoading) return null;
         return (
             <View style={styles.loading}>
                 <ActivityIndicator />
@@ -37,35 +39,47 @@ class HomeScreen extends Component {
     componentWillReceiveProps(nextProps) {
         const { offset, error } = nextProps;
         if (offset > this.state.offset || error) {
-            this.setState({ offset: offset, isLoading: false });
+            this.setState({ offset: offset, isLoading: false, footerLoading: false });
         }
     }
 
     getHeros() {
         const { retrieveHero } = this.props;
         const { limit, offset } = this.state;
-        this.setState({ isLoading: true })
+        this.setState({ offset: offset, isLoading: false, footerLoading: true });
         retrieveHero(limit, offset)
     }
 
     render() {
         const { heroes, navigation } = this.props;
-        return (
-            <SafeAreaView style={styles.container}>
-                <View style={{ flex: 1 }}>
-                    {heroes.length > 0 &&
-                        <FlatList
-                            data={heroes}
-                            keyExtractor={(item, index) => item.id.toString()}
-                            renderItem={hero => <HeroCard item={hero.item} navigation={navigation}/>}
-                            onEndReached={this.getHeros}
-                            onEndReachedThreshold={0.01}
-                            ListFooterComponent={this.renderFooter}
-                        />
-                    }
-                </View>
-            </SafeAreaView>
-        )
+        const { isLoading } = this.state;
+
+        if (isLoading) {
+            return (
+                <SafeAreaView style={styles.container}>
+                    <LoadComponent />
+                </SafeAreaView>
+            )
+        } else {
+            return (
+                <SafeAreaView style={styles.container}>
+                    <View style={{ flex: 1 }}>
+                        {heroes.length > 0 &&
+                            <FlatList
+                                data={heroes}
+                                keyExtractor={(item, index) => item.id.toString()}
+                                renderItem={hero => <HeroCard item={hero.item} navigation={navigation} />}
+                                onEndReached={this.getHeros}
+                                onEndReachedThreshold={0.01}
+                                ListFooterComponent={this.renderFooter}
+                            />
+                        }
+                    </View>
+                </SafeAreaView>
+            )
+        }
+
+
     }
 }
 
